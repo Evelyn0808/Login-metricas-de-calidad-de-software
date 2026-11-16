@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f2eeff" />
+  <title>Cuenta bloqueada - Penalización</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="auth">
+  <main class="auth-card">
+    <div class="brand" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+    </div>
+
+    <h1 id="lock-title">Cuenta bloqueada</h1>
+    <p class="subtitle" id="lock-subtitle">Penalización de 15 minutos</p>
+
+    <!-- Estado 1: Cronometro activo obligatorio (durante los 15 minutos) -->
+    <div id="view-timer">
+      <div class="lock-banner">
+        <div class="lock-banner-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </div>
+        <div class="lock-banner-body">
+          <strong>Penalización por intentos fallidos</strong>
+          <p>Has ingresado la contraseña de forma incorrecta 3 veces seguidas. Por seguridad, debes esperar a que transcurran los 15 minutos de penalización obligatoria.</p>
+        </div>
+      </div>
+
+      <div class="countdown-card">
+        <span class="countdown-label">Tiempo de espera obligatorio</span>
+        <div class="countdown-timer" id="timer-display">15:00</div>
+        <span class="countdown-sub">Una vez que el cronómetro llegue a cero, podrás solicitar un código de verificación a tu correo para volver a intentar.</span>
+      </div>
+    </div>
+
+    <!-- Estado 2: Penalizacion concluida (solo visible cuando el cronometro llega a 00:00) -->
+    <div id="view-request" style="display: none;">
+      <div class="lock-banner is-success-banner">
+        <div class="lock-banner-icon icon-success" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
+        <div class="lock-banner-body">
+          <strong>Tiempo de penalización finalizado</strong>
+          <p>Los 15 minutos han concluido. El código de verificación se enviará a tu correo registrado:</p>
+          <div class="target-email-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+            <strong id="target-user-email">tu correo registrado</strong>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btn-request-code" type="button" style="margin-top: 16px;">
+        <span class="spinner" aria-hidden="true"></span>
+        <span class="btn-label">Solicitar código de verificación</span>
+      </button>
+    </div>
+
+    <!-- Estado 3: Validacion del codigo de 6 digitos (tras solicitar el codigo) -->
+    <div id="view-verify" style="display: none;">
+      <div class="lock-banner is-success-banner">
+        <div class="lock-banner-icon icon-success" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+          </svg>
+        </div>
+        <div class="lock-banner-body">
+          <strong>Código de verificación enviado</strong>
+          <p>Hemos enviado el código de 6 dígitos a tu correo registrado:</p>
+          <div class="target-email-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+            <strong id="sent-user-email">tu correo registrado</strong>
+          </div>
+        </div>
+      </div>
+
+      <form id="verify-form" class="form" novalidate>
+        <div class="field">
+          <label for="verification-code">Código de verificación (6 dígitos)</label>
+          <div class="input-wrap">
+            <input
+              id="verification-code"
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              maxlength="6"
+              placeholder="000000"
+              class="code-input"
+              autocomplete="one-time-code"
+              required
+            />
+          </div>
+          <p class="hint">Ingresa el código de 6 dígitos recibido para desbloquear tu cuenta.</p>
+        </div>
+
+        <button class="btn-primary" id="btn-verify-code" type="submit">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="btn-label">Validar código y habilitar acceso</span>
+        </button>
+
+        <div style="margin-top: 12px;">
+          <button type="button" class="btn-ghost" id="btn-resend-code" style="width: 100%; justify-content: center;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 2v6h-6"></path>
+              <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+              <path d="M3 22v-6h6"></path>
+              <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+            </svg>
+            <span>Reenviar código</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Alertas y mensajes de retroalimentación -->
+    <div class="alert" id="lock-alert" role="alert" aria-live="polite" aria-hidden="true" style="margin-top: 18px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7.5v5.5" />
+        <path d="M12 16.5h.01" />
+      </svg>
+      <span id="lock-alert-text"></span>
+    </div>
+
+    <p class="alt" style="margin-top: 24px;">
+      <a href="/login.html" id="link-back">Volver al inicio de sesión</a>
+    </p>
+  </main>
+
+  <script src="/js/lockout.js" defer></script>
+</body>
+</html>
